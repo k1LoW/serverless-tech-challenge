@@ -51,7 +51,7 @@
                          console.log('id token + ' + result.getIdToken().getJwtToken());
                          $.ajax({
                              type: 'GET',
-                             url: 'https://s9p9j84cz7.execute-api.ap-northeast-1.amazonaws.com/dev/mypage',
+                             url: '/<%= stage %>/mypage',
                              headers: {
                                  Authorization: result.getIdToken().getJwtToken()
                              }
@@ -72,9 +72,27 @@
     <body>
         <section class="section">
             <div class="container">
-                <input id="email" type="email" name="email">
-                <input id="password" type="password" name="password">
-                <button id="login">Login</button>
+                <div class="columns">
+                    <div class="column"></div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">Email</label>
+                            <div class="control">
+                                <input class="input" id="email" type="email" name="email">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Password</label>
+                            <div class="control">
+                                <input class="input" id="password" type="password" name="password">
+                            </div>
+                        </div>
+                        <div class="control">                                
+                            <button class="button" id="login">Login</button>
+                        </div>
+                    </div>
+                    <div class="column"></div>
+                </div>
             </div>
         </section>
     </body>
