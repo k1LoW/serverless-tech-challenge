@@ -74,6 +74,15 @@ functions:
           authorizer:
             name: authorizer
             arn: arn:aws:cognito-idp:ap-northeast-1:079973668103:userpool/ap-northeast-1_bKLNdEwKU
+  selfie:
+    handler: src/selfie.upload
+    events:
+      - http:
+          path: selfie
+          method: post
+          authorizer:
+            name: authorizer
+            arn: arn:aws:cognito-idp:ap-northeast-1:079973668103:userpool/ap-northeast-1_bKLNdEwKU
 
 #    Define function environment variables here
 #    environment:

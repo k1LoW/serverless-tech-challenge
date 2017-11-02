@@ -1,10 +1,11 @@
 'use strict';
 
-module.exports.handler = (event, context, callback) => {
+module.exports.upload = (event, context, callback) => {
     console.log(event);
 
     const username = event.requestContext.authorizer.claims['cognito:username'];
-
+    const selfie = event.body;
+    
     let data = {
         username: username
     };
