@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset=utf-8>
-        <title>slsconf</title>
+        <title>sls-match</title>
         <link rel="icon" href="data:image/vnd.microsoft.icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAABHTuEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">        
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.0/css/bulma.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -18,16 +18,48 @@
         <script>
          const region = 'ap-northeast-1';
          const token = Cookies.get('token');
-         if (!token) {
-             location.href = '/<%= stage %>/';
-         }
-         $.ajax({
-             url: '/<%= stage %>/me',
-             headers: {
-                 Authorization: token
+         jQuery(document).ready(function($){ 
+             if (!token) {
+                 location.href = '/<%= stage %>/';
              }
-         }).done((res) => {
-             console.log(res);
+             $.ajax({
+                 url: '/<%= stage %>/me',
+                 headers: {
+                     Authorization: token
+                 }
+             }).done((res) => {
+                 $('#username').text(res.username);
+             });
+
+             $('#upload').on('click', function() {
+                 if(!$('#selfie').get(0).files.length) return;
+		             var file=$('#selfie').get(0).files[0];
+		             var fr=new FileReader();
+		             fr.onload=function(evt) {
+			               console.log(evt.target.result);
+                     // POSTでアップロード
+                     $.ajax({
+                         url: '/<%= stage %>/selfie',
+                         headers: {
+                             Authorization: token
+                         },
+                         type: 'POST',
+                         data: {
+                             selfie: evt.target.result
+                         },
+                         cache: false,
+                         contentType: false,
+                         processData: false,
+                         dataType: "html"
+                     })
+                      .done(function(res) {
+                          console.log(res);
+                      });
+		             }
+		             fr.readAsDataURL(file);
+                 
+                 return false;
+             });
          });
         </script>
     </head>
@@ -37,7 +69,24 @@
                 <div class="columns">
                     <div class="column"></div>
                     <div class="column">
-                        
+                        <div class="field">
+                            <label class="label">Your Email</label>
+                            <div id="username" class="control">
+                                
+                            </div>
+                        </div>
+                        <form id="upload-selfie">
+                            <div class="field">
+                                <label class="label">Selfie</label>
+                                <div class="control">
+                                    <input id="selfie" type="file" name="selfie">
+                                </div>
+                                
+                            </div>
+                        </form>
+                        <div class="control">                                
+                            <button class="button" id="upload">Upload</button>
+                        </div>
                     </div>
                     <div class="column"></div>
                 </div>
