@@ -5,8 +5,8 @@ provider:
   environment:
     SLSCONF_STAGE: ${env:SLSCONF_STAGE, 'v0'}
     SLSCONF_SERVICE_NAME: ${env:SLSCONF_SERVICE_NAME, 'slsconf-challenge'}
-    SLSCONF_REGION: ${env:SLSCONF_REGION, 'ap-northeast-1'}
-    S3_BUCKET_NAME: ${env:SLSCONF_S3_BUCKET_NAME, 'slsconf-challenge-fb993f'}
+    SLSCONF_REGION: ${env:SLSCONF_REGION, 'us-east-1'}
+    S3_BUCKET_NAME: ${env:SLSCONF_S3_BUCKET_NAME, 'slsconf-challenge'}
   runtime: nodejs6.10
   stage: ${self:provider.environment.SLSCONF_STAGE}
   region: ${self:provider.environment.SLSCONF_REGION}
@@ -28,6 +28,11 @@ provider:
         - "sqs:*"
       Resource:
         - "arn:aws:sqs:${self:provider.region}:*:${self:service}-${self:provider.stage}-Channel"
+    - Effect: Allow
+      Action:
+        - "rekognition:*"
+      Resource:
+        - "*"
 
 # you can add packaging information here
 #package:
@@ -73,6 +78,8 @@ functions:
   recognize:
     handler: src/image.recognize
     events:
+      - s3:
+          bucket: ${self:provider.environment.S3_BUCKET_NAME}
       - http:
           path: recognize
           method: get
@@ -85,15 +92,3 @@ functions:
           authorizer:
             name: authorizer
             arn: arn:aws:cognito-idp:ap-northeast-1:079973668103:userpool/ap-northeast-1_bKLNdEwKU
-
-#    Define function environment variables here
-#    environment:
-#      variable2: value2
-
-resources:
-  Resources:
-    HostingBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: ${self:provider.environment.S3_BUCKET_NAME}
-        AccessControl: Private

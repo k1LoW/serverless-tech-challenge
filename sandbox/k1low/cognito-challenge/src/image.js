@@ -1,7 +1,7 @@
 'use strict';
+var AWS = require("aws-sdk");
+var rekognition = new AWS.Rekognition({region: 'us-east-1'});
 
-const ejs = require('ejs');
-const fs = require('fs');
 const stage = process.env.SLSCONF_STAGE;
 
 module.exports.recognize = (event, context, callback) => {
@@ -9,33 +9,31 @@ module.exports.recognize = (event, context, callback) => {
         stage: stage
     };
 
-    /*
-    var key = event.Records[0].s3.object.key;
-    var ids = key.split('/');
+    const bucketName = event.Records[0].s3.bucket.name;
+    const key = event.Records[0].s3.object.key;
     var params = {
-      CollectionId: "コレクション名", 
-      DetectionAttributes: [
-      ], 
-      ExternalImageId: ids[ids.length-1], 
       Image: {
        S3Object: {
-        Bucket: "バケット名", 
+        Bucket: bucketName, 
         Name: key
        }
       }
      };
-     rekognition.indexFaces(params, function(err, data) {
-       if (err) console.log(err, err.stack); 
-       else     console.log(data);           
-     });
-    */
-    
-    const response = {
-        statusCode: 200,
-        headers: {
-            'Content-Type': 'text/html'
-        },
-        body: ejs.render(fs.readFileSync(__dirname + '/signup.html').toString('utf-8'), data)
-    };
-    callback(null, response);
+     rekognition.detectFaces(params, function(err, data) {
+       if (err) {
+            const response = {
+                statusCode: 500,
+                body: JSON.stringify(err),
+            };
+            console.log(response);
+            callback(null, response);
+        } else {
+            const response = {
+                statusCode: 200,
+                body: JSON.stringify(data),
+            };
+            console.log(response);
+            callback(null, response);
+        }
+    });    
 };
