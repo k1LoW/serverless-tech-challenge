@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset=utf-8>
+        <title>slsconf</title>
+        <link rel="icon" href="data:image/vnd.microsoft.icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAABHTuEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.0/css/bulma.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.142.0/aws-sdk.min.js"></script>
+        <script src="https://rawgit.com/aws/amazon-cognito-identity-js/master/dist/aws-cognito-sdk.min.js"></script>
+        <script src="https://cdn.rawgit.com/aws/amazon-cognito-identity-js/master/dist/amazon-cognito-identity.min.js"></script>
+        <style>
+
+        </style>
+        <script>
+         const region = 'ap-northeast-1';
+         const poolId = 'ap-northeast-1_bKLNdEwKU';
+         const clientId = '2r9vkqg7nj33dp90adiinr5n56';         
+         jQuery(document).ready(function($){ 
+             AWS.config.region = region; // Region
+             AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                 IdentityPoolId: poolId
+             });
+
+             // Cognito User Pool Id
+             AWSCognito.config.region = region;
+             AWSCognito.config.credentials = new AWS.CognitoIdentityCredentials({
+                 IdentityPoolId: poolId
+             });
+
+             $("#signup").on( "click", function(){
+
+                 var poolData = { 
+                     UserPoolId : poolId,
+                     ClientId : clientId
+                 };
+
+                 var userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(poolData);
+
+                 var attributeList = [];
+
+                 var dataEmail = {
+                     Name : 'email',
+                     Value : $('#email').val()
+                 };
+
+                 var attributeEmail = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserAttribute(dataEmail);
+
+                 attributeList.push(attributeEmail);
+
+                 userPool.signUp($('#email').val(), $('#password').val(), attributeList, null, function(err, result){
+                     if (err) {
+                         console.log(err);
+                         return;
+                     }
+                     cognitoUser = result.user;
+                     console.log('user name is ' + cognitoUser.getUsername());
+                     console.log('call result: ' + result);
+                     location.href = 'activation';
+                 });
+             });
+         });
+        </script>
+    </head>
+    <body>
+        <section class="section">
+            <div class="container">
+                <input class="input" id="email" type="email" name="email">
+                <input class="input" id="password" type="password" name="password">
+                <button id="signup">Sign Up</button>
+            </div>
+        </section>
+    </body>
+</html>
