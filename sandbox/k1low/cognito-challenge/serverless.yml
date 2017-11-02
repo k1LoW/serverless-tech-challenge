@@ -4,7 +4,7 @@ provider:
   name: aws
   environment:
     SLSCONF_STAGE: ${env:SLSCONF_STAGE, 'v0'}
-    SLSCONF_SERVICE_NAME: ${env:SLSCONF_SERVICE_NAME, 'slsconf-challenge'}
+    SLSCONF_SERVICE_NAME: ${env:SLSCONF_SERVICE_NAME, 'slsconf-challenge-k1low'}
     SLSCONF_REGION: ${env:SLSCONF_REGION, 'ap-northeast-1'}
   runtime: nodejs6.10
   stage: ${self:provider.environment.SLSCONF_STAGE}
@@ -61,17 +61,23 @@ functions:
       - http:
           path: activation
           method: get
-  loginTest:
+  login:
     handler: src/auth.login
     events:
       - http:
           path: login
           method: get
-  hello:
-    handler: handler.hello
+  mypage:
+    handler: src/mypage.handler
     events:
       - http:
           path: mypage
+          method: get
+  me:
+    handler: src/me.handler
+    events:
+      - http:
+          path: me
           method: get
           authorizer:
             name: authorizer

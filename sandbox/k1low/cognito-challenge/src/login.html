@@ -10,6 +10,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.142.0/aws-sdk.min.js"></script>
         <script src="https://rawgit.com/aws/amazon-cognito-identity-js/master/dist/aws-cognito-sdk.min.js"></script>
         <script src="https://cdn.rawgit.com/aws/amazon-cognito-identity-js/master/dist/amazon-cognito-identity.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
         <style>
 
         </style>
@@ -49,17 +50,9 @@
                      onSuccess: function (result) {
                          console.log('access token + ' + result.getAccessToken().getJwtToken());
                          console.log('id token + ' + result.getIdToken().getJwtToken());
-                         $.ajax({
-                             type: 'GET',
-                             url: '/<%= stage %>/mypage',
-                             headers: {
-                                 Authorization: result.getIdToken().getJwtToken()
-                             }
-                         }).done(function(res) {
-                             console.log(res);
-                         });
+                         Cookies.set('token', result.getIdToken().getJwtToken());
+                         location.href = '/<%= stage %>/mypage';
                      },
-
                      onFailure: function(err) {
                          alert(err);
                      },
