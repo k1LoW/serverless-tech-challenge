@@ -4,7 +4,7 @@ provider:
   name: aws
   environment:
     SLSCONF_STAGE: ${env:SLSCONF_STAGE, 'v0'}
-    SLSCONF_SERVICE_NAME: ${env:SLSCONF_SERVICE_NAME, 'slsconf-matching-app'}
+    SLSCONF_SERVICE_NAME: ${env:SLSCONF_SERVICE_NAME, 'slsconf-challenge-k1low'}
     SLSCONF_REGION: ${env:SLSCONF_REGION, 'ap-northeast-1'}
   runtime: nodejs6.10
   stage: ${self:provider.environment.SLSCONF_STAGE}
@@ -26,13 +26,21 @@ provider:
 #            - "Ref" : "ServerlessDeploymentBucket"
 #            - "/*"
 
+# you can add packaging information here
+#package:
+#  include:
+#    - include-me.js
+#    - include-me-dir/**
+#  exclude:
+#    - exclude-me.js
+#    - exclude-me-dir/**
+
 package:
   include:
     - package.json
     - src/**
   exclude:
     - .git/**
-    - sandbox/**
 
 functions:
   index:
