@@ -32,26 +32,32 @@
              });
 
              $('#upload').on('click', function() {
-                 console.log('click');
-                 // フォームデータを取得
-                 var formdata = new FormData($('#upload-selfie').get(0));
-
-                 // POSTでアップロード
-                 $.ajax({
-                     url: '/<%= stage %>/selfie',
-                     headers: {
-                         Authorization: token
-                     },
-                     type: 'POST',
-                     data: formdata,
-                     cache: false,
-                     contentType: false,
-                     processData: false,
-                     dataType: "html"
-                 })
-                  .done(function(res) {
-                      console.log(data);
-                  });
+                 if(!$('#selfie').get(0).files.length) return;
+		             var file=$('#selfie').get(0).files[0];
+		             var fr=new FileReader();
+		             fr.onload=function(evt) {
+			               console.log(evt.target.result);
+                     // POSTでアップロード
+                     $.ajax({
+                         url: '/<%= stage %>/selfie',
+                         headers: {
+                             Authorization: token
+                         },
+                         type: 'POST',
+                         data: {
+                             selfie: evt.target.result
+                         },
+                         cache: false,
+                         contentType: false,
+                         processData: false,
+                         dataType: "html"
+                     })
+                      .done(function(res) {
+                          console.log(res);
+                      });
+		             }
+		             fr.readAsDataURL(file);
+                 
                  return false;
              });
          });
@@ -73,7 +79,7 @@
                             <div class="field">
                                 <label class="label">Selfie</label>
                                 <div class="control">
-                                    <input type="file" name="selfie">
+                                    <input id="selfie" type="file" name="selfie">
                                 </div>
                                 
                             </div>
