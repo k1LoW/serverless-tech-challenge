@@ -6,25 +6,28 @@ provider:
     SLSCONF_STAGE: ${env:SLSCONF_STAGE, 'v0'}
     SLSCONF_SERVICE_NAME: ${env:SLSCONF_SERVICE_NAME, 'slsconf-challenge'}
     SLSCONF_REGION: ${env:SLSCONF_REGION, 'ap-northeast-1'}
+    S3_BUCKET_NAME: ${env:SLSCONF_S3_BUCKET_NAME, 'slsconf-challenge-fb993f'}
   runtime: nodejs6.10
   stage: ${self:provider.environment.SLSCONF_STAGE}
   region: ${self:provider.environment.SLSCONF_REGION}
-
-# you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:PutObject"
-#      Resource:
-#        Fn::Join:
-#          - ""
-#          - - "arn:aws:s3:::"
-#            - "Ref" : "ServerlessDeploymentBucket"
-#            - "/*"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "s3:*"
+      Resource:
+        - { "Fn::Join" : ["", ["arn:aws:s3:::", "${self:provider.environment.S3_BUCKET_NAME}"] ] }
+        - { "Fn::Join" : ["", ["arn:aws:s3:::", "${self:provider.environment.S3_BUCKET_NAME}", "/*"] ] }
+    - Effect: Allow
+      Action:
+        - "lambda:InvokeFunction"
+        - "lambda:InvokeAsync"
+      Resource:
+        - "arn:aws:lambda:${self:provider.region}:*:function:${self:service}-${self:provider.stage}-*"
+    - Effect: Allow
+      Action:
+        - "sqs:*"
+      Resource:
+        - "arn:aws:sqs:${self:provider.region}:*:${self:service}-${self:provider.stage}-Channel"
 
 # you can add packaging information here
 #package:
@@ -67,6 +70,12 @@ functions:
       - http:
           path: login
           method: get
+  recognize:
+    handler: src/image.recognize
+    events:
+      - http:
+          path: recognize
+          method: get
   hello:
     handler: handler.hello
     events:
@@ -82,14 +91,10 @@ functions:
 #    environment:
 #      variable2: value2
 
-# you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+resources:
+  Resources:
+    HostingBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.S3_BUCKET_NAME}
+        AccessControl: Private
