@@ -56,9 +56,27 @@
     <body>
         <section class="section">
             <div class="container">
-                <input id="email" type="email" name="email">
-                <input id="key" type="text" name="key">
-                <button id="send">Send</button>
+                <div class="columns">
+                    <div class="column"></div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">Email</label>
+                            <div class="control">
+                                <input class="input" id="email" type="email" name="email">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Activation Code</label>
+                            <div class="control">
+                                <input class="input" id="key" type="text" name="key">
+                            </div>
+                        </div>
+                        <div class="control">
+                            <button class="button" id="send">Send</button>
+                        </div>
+                    </div>
+                    <div class="column"></div>
+                </div>
             </div>
         </section>
     </body>
